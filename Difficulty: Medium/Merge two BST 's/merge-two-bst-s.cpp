@@ -92,26 +92,53 @@ struct Node {
     }
 };
 */
-    class Solution {
-  public:
-    vector<int> r1, r2, res;
-    void rec( Node* root, int t ){
-        if ( root->left ) rec(root->left, t);
-        if ( t == 0 ) r1.push_back(root->data);
-        else r2.push_back(root->data);
-        if ( root->right ) rec(root->right, t);
-    }
+class Solution {
     
-    vector<int> merge(Node *root1, Node *root2) {
-        rec(root1, 0); rec(root2, 1);
-        int i = 0, n = r1.size(), j = 0, m = r2.size();
-        while ( i < n && j < m ){
-            if ( r1[i] < r2[j] ) res.push_back(r1[i++]);
-            else res.push_back(r2[j++]);
+    private:
+    
+    void add_to_stack(stack<Node*>&s,Node* node)
+    {
+        while(node)
+        {
+            s.push(node);
+            node= node->left;
         }
-        while ( i < n ) res.push_back(r1[i++]);
-        while ( j < m ) res.push_back(r2[j++]);
-        return res;
+    }
+       
+  public:
+  
+    vector<int> merge(Node *root1, Node *root2) {
+        
+        vector<int>ans;
+        stack<Node*>s1,s2;
+          add_to_stack(s1,root1);
+          add_to_stack(s2,root2);
+          
+          while(!s1.empty() || !s2.empty())
+          {
+              int a= (s1.size()>0?s1.top()->data: INT_MAX);
+              int b= (s2.size()>0?s2.top()->data:INT_MAX);
+              
+              if(a<b)
+              {
+                  ans.push_back(a);
+                  auto temp= s1.top();
+                  s1.pop();
+                  
+                  add_to_stack(s1,temp->right);
+                  
+              }
+              else
+              {
+                  ans.push_back(b);
+                  auto temp= s2.top();
+                  s2.pop();
+                  add_to_stack(s2,temp->right);
+              }
+              
+          }
+          return ans;
+        
     }
 };
 
